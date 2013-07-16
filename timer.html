@@ -1,11 +1,13 @@
 <html>
 <head>
     <title>Count down timer</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=9" />
     <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <style type="text/css">
         #timer {
             font-size: 120px;
             -moz-border-radius: 15px;
+			-webkit-border-radius: 15px;
             border-radius: 15px;
             font-style: bold;
             font-family: sans-serif;
@@ -17,19 +19,38 @@
     </style>
 </head>
 <body>
-    <form onsubmit="reset_timer(); return false;"><input id="target" name="target" type="text" /></form>
+    <form onsubmit="reset_timer(); return false;">
+		<input id="target" name="target" type="text"/>
+	</form>
     <span id="timer">
-        00:00:00
+        00:00:00 000
     </span> 
 
     <script type="text/javascript">
+		deparam = function (querystring) {
+		  // remove any preceding url and split
+		  querystring = querystring.substring(querystring.indexOf('?')+1).split('&');
+		  var params = {}, pair, d = decodeURIComponent;
+		  // march and parse
+		  for (var i = querystring.length - 1; i >= 0; i--) {
+			pair = querystring[i].split('=');
+			params[d(pair[0])] = d(pair[1]);
+		  }
+
+		  return params;
+		};//--  fn  deparam
         var target = new Date().getTime();
         reset_timer = function(){
             var parts = $("#target").val().split(":");
+			if(parts.length === 1){
+				target = new Date().getTime() + (parseInt(parts[1]) * 60000);
+			}
+			else{
             target = new Date().getTime() + 
                 (parseInt(parts[0]) * 360000) + 
                 (parseInt(parts[1]) * 60000) + 
                 (parseInt(parts[2]) * 1000);
+			}			
         };
         to_time_string = function(timespan){
             var text =  "";
@@ -37,9 +58,9 @@
               timespan = -timespan;
               text = "- ";
             } 
-            var hours = Math.floor(timespan/360000).toString();
+            var hours = Math.floor(timespan/3600000).toString();
             if(hours.length <2) hours = "0" + hours;
-            var minutes = Math.floor((timespan%360000)/60000).toString();
+            var minutes = Math.floor((timespan%3600000)/60000).toString();
             if(minutes.length <2) minutes = "0" + minutes;
             var seconds = Math.floor((timespan%60000)/1000).toString();
             if(seconds.length <2) seconds = "0" + seconds;
@@ -67,6 +88,9 @@
         $(function(){
             timer = $("#timer");
             setInterval(update_timer, 100);
+			if(document.URL.indexOf('?') > 0){
+				target = new Date().getTime() + (parseInt(deparam(document.URL).min) * 60000);
+			}
         });
     </script>
 
