@@ -1,0 +1,74 @@
+<html>
+<head>
+    <title>Count down timer</title>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <style type="text/css">
+        #timer {
+            font-size: 120px;
+            -moz-border-radius: 15px;
+            border-radius: 15px;
+            font-style: bold;
+            font-family: sans-serif;
+            border:5px solid #0F0; 
+            color: #0F0;
+            background-color: #CFC;
+        }
+        #timer.negative{ border:5px solid red; color: #F00; background-color: #FCC; }
+    </style>
+</head>
+<body>
+    <form onsubmit="reset_timer(); return false;"><input id="target" name="target" type="text" /></form>
+    <span id="timer">
+        00:00:00
+    </span> 
+
+    <script type="text/javascript">
+        var target = new Date().getTime();
+        reset_timer = function(){
+            var parts = $("#target").val().split(":");
+            target = new Date().getTime() + 
+                (parseInt(parts[0]) * 360000) + 
+                (parseInt(parts[1]) * 60000) + 
+                (parseInt(parts[2]) * 1000);
+        };
+        to_time_string = function(timespan){
+            var text =  "";
+            if(timespan < 0){
+              timespan = -timespan;
+              text = "- ";
+            } 
+            var hours = Math.floor(timespan/360000).toString();
+            if(hours.length <2) hours = "0" + hours;
+            var minutes = Math.floor((timespan%360000)/60000).toString();
+            if(minutes.length <2) minutes = "0" + minutes;
+            var seconds = Math.floor((timespan%60000)/1000).toString();
+            if(seconds.length <2) seconds = "0" + seconds;
+            var milli = (timespan%1000).toString();
+            if(milli.length <2) milli = "0" + milli;
+            if(milli.length <3) milli = "0" + milli;
+            var text =  text + hours + ":" + minutes + ":" + seconds + " " + milli ;
+            return text;
+        };
+
+        to_milli_string = function(timespan){
+            var milli = (timespan%1000).toString();
+            if(milli.length <2) milli = "0" + milli;
+            if(milli.length <3) milli = "0" + milli;
+            return milli;
+        }
+
+        var timer;
+        update_timer = function(){
+            var diff = target - new Date().getTime();
+            timer.text(to_time_string(diff));
+            if(diff < 0) timer.addClass("negative");
+            else timer.removeClass("negative");
+        };
+        $(function(){
+            timer = $("#timer");
+            setInterval(update_timer, 100);
+        });
+    </script>
+
+</body>
+</html>
