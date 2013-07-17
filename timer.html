@@ -4,7 +4,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=9" />
     <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <style type="text/css">
-        #timer {
+        #timer_div {
             font-size: 120px;
             -moz-border-radius: 15px;
 			-webkit-border-radius: 15px;
@@ -14,19 +14,55 @@
             border:5px solid #0F0; 
             color: #0F0;
             background-color: #CFC;
+            width: fit-content;  
+            height: fit-content;
+            width: -webkit-fit-content;  
+            height: -webkit-fit-content;
+            width: -moz-fit-content;  
+            height: -moz-fit-content;
+            padding: 0 20px 0 20px;
+            margin: 0px;
         }
-        #timer.negative{ border:5px solid red; color: #F00; background-color: #FCC; }
+        #timer_div.negative { 
+            border:5px solid red; 
+            color: #F00; 
+            background-color: #FCC; 
+        }
+        #milli { 
+            font-size: 30px;
+            padding-right: 10px;
+        }
     </style>
 </head>
 <body>
     <form onsubmit="reset_timer(); return false;">
 		<input id="target" name="target" type="text"/>
-	</form>
-    <span id="timer">
-        00:00:00 000
-    </span> 
+        <button onclick="start();">Restart</button> 
+	    <button onclick="stop();return false;">Stop</button> 
+        <button onclick="start();return false;">Start</button>
+    </form>
+    <div id="timer_div">
+        <span id="timer">00:00:00</span> <span id="milli">000</span>
+    </div> 
 
     <script type="text/javascript">
+        var paused_at = null; 
+        var target = new Date().getTime();
+        var timer, milli, callback = null;        
+
+        stop = function(){
+            clearTimeout(callback);
+            callback = null;
+            paused_at = target - new Date().getTime();
+        };
+
+        start = function(){
+            if(callback===null) {
+                target = paused_at + new Date().getTime();
+                callback = setInterval(update_timer, 100);
+            }
+        };
+
 		deparam = function (querystring) {
 		  // remove any preceding url and split
 		  querystring = querystring.substring(querystring.indexOf('?')+1).split('&');
@@ -39,8 +75,8 @@
 
 		  return params;
 		};//--  fn  deparam
-        var target = new Date().getTime();
-        reset_timer = function(){
+        
+        reset_timer = function() {
             var parts = $("#target").val().split(":");
 			if(parts.length === 1){
 				target = new Date().getTime() + (parseInt(parts[1]) * 60000);
@@ -52,11 +88,12 @@
                 (parseInt(parts[2]) * 1000);
 			}			
         };
+        
         to_time_string = function(timespan){
             var text =  "";
             if(timespan < 0){
               timespan = -timespan;
-              text = "- ";
+              text = "-";
             } 
             var hours = Math.floor(timespan/3600000).toString();
             if(hours.length <2) hours = "0" + hours;
@@ -64,32 +101,33 @@
             if(minutes.length <2) minutes = "0" + minutes;
             var seconds = Math.floor((timespan%60000)/1000).toString();
             if(seconds.length <2) seconds = "0" + seconds;
-            var milli = (timespan%1000).toString();
-            if(milli.length <2) milli = "0" + milli;
-            if(milli.length <3) milli = "0" + milli;
-            var text =  text + hours + ":" + minutes + ":" + seconds + " " + milli ;
+            var text =  text + hours + ":" + minutes + ":" + seconds;
             return text;
         };
 
         to_milli_string = function(timespan){
-            var milli = (timespan%1000).toString();
+            var milli = (Math.abs(timespan%1000)).toString();
             if(milli.length <2) milli = "0" + milli;
             if(milli.length <3) milli = "0" + milli;
             return milli;
         }
 
-        var timer;
         update_timer = function(){
             var diff = target - new Date().getTime();
             timer.text(to_time_string(diff));
-            if(diff < 0) timer.addClass("negative");
-            else timer.removeClass("negative");
+            milli.text(to_milli_string(diff));
+            if(diff < 0) timer.parent().addClass("negative");
+            else timer.parent().removeClass("negative");
         };
+        
         $(function(){
             timer = $("#timer");
-            setInterval(update_timer, 100);
+            milli = $("#milli");
+            start();
 			if(document.URL.indexOf('?') > 0){
-				target = new Date().getTime() + (parseInt(deparam(document.URL).min) * 60000);
+                var min = deparam(document.URL).min;
+				target = new Date().getTime() + (parseInt(min) * 60000);
+                $("#target").val("00:"+min.toString()+":00");
 			}
         });
     </script>
