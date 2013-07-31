@@ -1,0 +1,116 @@
+<html>
+<head>
+    <title>Count down timer</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <style type="text/css">
+        * {            
+            background-color: #000; 
+        }
+        #timer_div {
+            font-size: 100px;
+            -moz-border-radius: 15px;
+			-webkit-border-radius: 15px;
+            border-radius: 15px;
+            font-style: bold;
+            font-family: sans-serif;
+            border:5px solid #0F0; 
+            color: #0F0;
+            width: fit-content;  
+            height: fit-content;
+            width: -webkit-fit-content;  
+            height: -webkit-fit-content;
+            width: -moz-fit-content;  
+            height: -moz-fit-content;
+            padding: 0 20px 0 20px;
+            margin: 0px;
+        }
+        #timer_div.negative { 
+            border:5px solid red; 
+            color: #F00; 
+        }
+        #milli { 
+            font-size: 30px;
+            padding-right: 10px;
+        }
+        .counter {
+        }
+    </style>
+</head>
+<body>
+    <div id="timer_div">
+        <div class="counter" id="day"><label>Days:</label><span>00</span></div>
+    </div> 
+
+    <script type="text/javascript">
+		deparam = function (querystring) {
+		  // remove any preceding url and split
+		  querystring = querystring.substring(querystring.indexOf('?')+1).split('&');
+		  var params = {}, pair, d = decodeURIComponent;
+		  // march and parse
+		  for (var i = querystring.length - 1; i >= 0; i--) {
+			pair = querystring[i].split('=');
+			params[d(pair[0])] = d(pair[1]);
+		  }
+
+		  return params;
+		};//--  fn  deparam
+        
+        function workingDaysBetweenDates(startDate, endDate) {
+          
+            // Validate input
+            if (endDate < startDate)
+                return 0;
+            
+            // Calculate days between dates
+            var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
+            startDate.setHours(0,0,0,1);  // Start just after midnight
+            endDate.setHours(23,59,59,999);  // End just before midnight
+            var diff = endDate - startDate;  // Milliseconds between datetime objects    
+            var days = Math.ceil(diff / millisecondsPerDay);
+            
+            // Subtract two weekend days for every week in between
+            var weeks = Math.floor(days / 7);
+            var days = days - (weeks * 2);
+
+            // Handle special cases
+            var startDay = startDate.getDay();
+            var endDay = endDate.getDay();
+            
+            // Remove weekend not previously removed.   
+            if (startDay - endDay > 1)         
+                days = days - 2;      
+            
+            // Remove start day if span starts on Sunday but ends before Saturday
+            if (startDay == 0 && endDay != 6)
+                days = days - 1  
+                    
+            // Remove end day if span ends on Saturday but starts after Sunday
+            if (endDay == 6 && startDay != 0)
+                days = days - 1  
+            
+            return days;
+        }
+
+        update_timer = function(target){
+            $("#day span").text(workingDaysBetweenDates(new Date(), target).toString());
+        };
+        
+        $(function(){
+            var target;
+			if(deparam(document.URL).date != undefined){
+                var parts = deparam(document.URL).date.split('-');
+                target = new Date(parts[0], parts[1]-1, parts[2]);
+ 			}
+            else{
+                alert("You need to pass in a date in the url\n ?date=[year]-[month]-[day]");
+            }
+            update_timer(target);
+            setInterval(function(){
+                update_timer(target);
+            },1000*60*60)
+        });
+    </script>
+
+</body>
+</html>
