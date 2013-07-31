@@ -1,19 +1,27 @@
 <html>
 <head>
     <title>Count down timer</title>
-	<meta http-equiv="X-UA-Compatible" content="IE=9" />
+  <meta http-equiv="X-UA-Compatible" content="IE=9" />
     <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <style type="text/css">
+        #subject {
+          text-align: center;
+          font-size: 90px;
+          font-style: bold;
+          font-family: sans-serif;
+          padding: 0px;
+          margin: 0px;
+        }
         #timer_div {
             font-size: 120px;
             -moz-border-radius: 15px;
-			-webkit-border-radius: 15px;
+            -webkit-border-radius: 15px;
             border-radius: 15px;
             font-style: bold;
             font-family: sans-serif;
-            border:5px solid #0F0; 
-            color: #0F0;
-            background-color: #CFC;
+            border:5px solid #059505; 
+            color: #059505;
+            background-color: #9F9;
             width: fit-content;  
             height: fit-content;
             width: -webkit-fit-content;  
@@ -24,9 +32,9 @@
             margin: 0px;
         }
         #timer_div.negative { 
-            border:5px solid red; 
-            color: #F00; 
-            background-color: #FCC; 
+            border:5px solid #950505; 
+            color: #950505; 
+            background-color: #F99; 
         }
         #milli { 
             font-size: 30px;
@@ -36,14 +44,16 @@
 </head>
 <body>
     <form onsubmit="reset_timer(); return false;">
-		<input id="target" name="target" type="text"/>
+    <input id="target" name="target" type="text"/>
         <button onclick="start();">Restart</button> 
-	    <button onclick="stop();return false;">Stop</button> 
+      <button onclick="stop();return false;">Stop</button> 
         <button onclick="start();return false;">Start</button>
     </form>
+    <h1 id="subject">Count Down<h1>
     <div id="timer_div">
         <span id="timer">00:00:00</span> <span id="milli">000</span>
-    </div> 
+    </div>
+
 
     <script type="text/javascript">
         var paused_at = null; 
@@ -63,30 +73,30 @@
             }
         };
 
-		deparam = function (querystring) {
-		  // remove any preceding url and split
-		  querystring = querystring.substring(querystring.indexOf('?')+1).split('&');
-		  var params = {}, pair, d = decodeURIComponent;
-		  // march and parse
-		  for (var i = querystring.length - 1; i >= 0; i--) {
-			pair = querystring[i].split('=');
-			params[d(pair[0])] = d(pair[1]);
-		  }
+    deparam = function (querystring) {
+      // remove any preceding url and split
+      querystring = querystring.substring(querystring.indexOf('?')+1).split('&');
+      var params = {}, pair, d = decodeURIComponent;
+      // march and parse
+      for (var i = querystring.length - 1; i >= 0; i--) {
+      pair = querystring[i].split('=');
+      params[d(pair[0])] = d(pair[1]);
+      }
 
-		  return params;
-		};//--  fn  deparam
+      return params;
+    };//--  fn  deparam
         
         reset_timer = function() {
             var parts = $("#target").val().split(":");
-			if(parts.length === 1){
-				target = new Date().getTime() + (parseInt(parts[1]) * 60000);
-			}
-			else{
+      if(parts.length === 1){
+        target = new Date().getTime() + (parseInt(parts[1]) * 60000);
+      }
+      else{
             target = new Date().getTime() + 
                 (parseInt(parts[0]) * 360000) + 
                 (parseInt(parts[1]) * 60000) + 
                 (parseInt(parts[2]) * 1000);
-			}			
+      }     
         };
         
         to_time_string = function(timespan){
@@ -124,11 +134,14 @@
             timer = $("#timer");
             milli = $("#milli");
             start();
-			if(document.URL.indexOf('?') > 0){
-                var min = deparam(document.URL).min;
-				target = new Date().getTime() + (parseInt(min) * 60000);
-                $("#target").val("00:"+min.toString()+":00");
-			}
+            if(document.URL.indexOf('?') > 0){
+              var params = deparam(document.URL)
+              target = new Date().getTime() + (parseInt(params.min) * 60000);
+              $("#target").val("00:"+params.min.toString()+":00");
+              if(params.title != undefined){
+                $("#subject").text(params.title);
+              }
+            }
         });
     </script>
 
