@@ -9,11 +9,11 @@ http://.../timer.html?min=123
 
 or enter it in the box provided in the format
 
-[hours]:[mins]:[seconds]
+\[hours\]:\[mins\]:\[seconds\]
 
-Stop - will pause the timer
-Start - will resume it.
-Restart - makes jumping bunnies dance across the screen.
+* Stop - will pause the timer
+* Start - will resume it.
+* Restart - makes jumping bunnies dance across the screen.
 
 [or maybe that's just in my local fork]
 
