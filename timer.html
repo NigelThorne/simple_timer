@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>Count down timer</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
     <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <style type="text/css">
         #subject {
@@ -30,6 +30,8 @@
             height: -moz-fit-content;
             padding: 0 20px 0 20px;
             margin: 0px;
+  		    margin-left: auto;
+            margin-right: auto;
         }
         #timer_div.negative { 
             border:5px solid #950505; 
@@ -137,10 +139,8 @@
             if(document.URL.indexOf('?') > 0){
               var params = deparam(document.URL)
               target = new Date().getTime() + (parseInt(params.min) * 60000);
-              $("#target").val("00:"+params.min.toString()+":00");
-              if(params.title != undefined){
-                $("#subject").text(params.title);
-              }
+              if(params.min != undefined)   $("#target").val("00:"+params.min.toString()+":00");
+              if(params.title != undefined) $("#subject").text(params.title);
             }
         });
     </script>
